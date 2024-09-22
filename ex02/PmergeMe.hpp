@@ -19,11 +19,11 @@ class PmergeMe
 		PmergeMe& operator=(const PmergeMe& pmergeMe) = delete;
 
 		void sort(char** sequence);
-		void sortVector(char** sequence);
 	
 	private:
 
 		// VECTOR
+		void sortVector(char** sequence);
 		void fordJohnsonSort(std::vector<int>& sequence);
 		void binaryInsertion(std::vector<int>& sortedVector, int element);
 		
@@ -32,6 +32,12 @@ class PmergeMe
 
 
 		// LIST
+		void sortList(char** sequence);
+		void fordJohnsonSort(std::list<int>& sequence);
+		void binaryInsertion(std::list<int>& sortedList, int element);
+		
+		std::list<int>* parseToList(char** sequence);
+		void printList(std::list<int>& sequence);
 };
 
 #endif
