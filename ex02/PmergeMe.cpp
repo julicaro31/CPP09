@@ -13,6 +13,7 @@ PmergeMe::~PmergeMe()
 void PmergeMe::sort(char **sequence)
 {
 	sortVector(sequence);
+	sortList(sequence);
 }
 
 // VECTOR
@@ -40,7 +41,7 @@ void PmergeMe::sortVector(char **sequence)
 
 	std::chrono::nanoseconds duration = std::chrono::duration_cast<std::chrono::nanoseconds>(endParse - startParse + endSort - startSort);
 	std::cout << "Time to process a range of " << vSequence->size() << " elements with std::vector: " << (double)duration.count() / 1000 << " us" << std::endl;
-
+	delete vSequence;
 }
 
 void PmergeMe::fordJohnsonSort(std::vector<int>& vec) 
@@ -171,36 +172,40 @@ void PmergeMe::sortList(char **sequence)
 	std::chrono::nanoseconds duration = std::chrono::duration_cast<std::chrono::nanoseconds>(endParse - startParse + endSort - startSort);
 	std::cout << "Time to process a range of " << lSequence->size() << " elements with std::list: " << (double)duration.count() / 1000 << " us" << std::endl;
 
+	delete lSequence;
 }
 
 void PmergeMe::fordJohnsonSort(std::list<int>& list) 
 {
 	int n = list.size();
 	if (n <= 1) return;
+	int straggler = -1;
 
 	std::list<std::pair<int, int>> pairs;
 
-	std::list<std::pair<int,int>>::iterator it;
+	std::list<int>::iterator it = list.begin();
 
 	while (it != list.end())
 	{
-		std::list<std::pair<int, int>> first = *it;
+		int first = *it;
 		it++;
-
 		if (it != list.end())
 		{
-			std::list<std::pair<int, int>> second = *it;
+			int second = *it;
+			it++;
 			if (first > second)
 			{
 				std::swap(first, second);
-				list.emplace_back(first, second);
 			}
+			pairs.emplace_back(first, second);
+		}
+		else
+		{
+			straggler = first;
 		}
 	}
-	// HEREEEE
-	int straggler = (n % 2 == 1) ? vec[n - 1] : -1;
 
-	std::sort(pairs.begin(), pairs.end(), [](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second;});
+	pairs.sort([](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second;});
 
 	std::list<int> sortedList;
 	for (std::pair<int,int>& p : pairs) 
@@ -210,36 +215,27 @@ void PmergeMe::fordJohnsonSort(std::list<int>& list)
 
 	for (std::pair<int,int>& p : pairs) 
 	{
-		binaryInsertion(sortedList, p.first);
+		insertion(sortedList, p.first);
 	}
 
 	if (straggler != -1) 
 	{
-		binaryInsertion(sortedList, straggler);
+		insertion(sortedList, straggler);
 	}
 
-	for (int i = 0; i < n; i++) 
-	{
-		list[i] = sortedList[i];
-	}
+	list = sortedList;
 }
 
-void PmergeMe::binaryInsertion(std::list<int>& sortedList, int element) 
+void PmergeMe::insertion(std::list<int>& sortedList, int element) 
 {
-	int left = 0, right = sortedList.size() - 1;
-	while (left <= right) 
+	for (std::list<int>::iterator it = sortedList.begin(); it != sortedList.end(); it++)
 	{
-		int mid = (left + right) / 2;
-		if (sortedList[mid] > element) 
+		if (*it > element)
 		{
-			right = mid - 1;
-		} 
-		else 
-		{
-			left = mid + 1;
+			sortedList.insert(it, element);
+			return;
 		}
 	}
-	sortedList.insert(sortedList.begin() + left, element);
 }
 
 std::list<int>* PmergeMe::parseToList(char** sequence)
@@ -262,7 +258,7 @@ std::list<int>* PmergeMe::parseToList(char** sequence)
 		}
 		catch(const std::exception& e)
 		{
-			delete vSequence;
+			delete lSequence;
 			std::cerr << "Error: Not an integer." << std::endl;
 			return nullptr;
 		}
