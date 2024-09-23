@@ -34,7 +34,7 @@ class PmergeMe
 		// // LIST
 		void sortList(char** sequence);
 		void fordJohnsonSort(std::list<int>& sequence);
-		void insertion(std::list<int>& sortedList, int element);
+		void binaryInsertion(std::list<int>& sortedList, int element);
 		
 		std::list<int>* parseToList(char** sequence);
 		void printList(std::list<int>& sequence);

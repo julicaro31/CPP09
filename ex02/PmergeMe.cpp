@@ -215,27 +215,39 @@ void PmergeMe::fordJohnsonSort(std::list<int>& list)
 
 	for (std::pair<int,int>& p : pairs) 
 	{
-		insertion(sortedList, p.first);
+		binaryInsertion(sortedList, p.first);
 	}
 
 	if (straggler != -1) 
 	{
-		insertion(sortedList, straggler);
+		binaryInsertion(sortedList, straggler);
 	}
 
 	list = sortedList;
 }
 
-void PmergeMe::insertion(std::list<int>& sortedList, int element) 
+void PmergeMe::binaryInsertion(std::list<int>& sortedList, int element) 
 {
-	for (std::list<int>::iterator it = sortedList.begin(); it != sortedList.end(); it++)
+	std::list<int>::iterator left = sortedList.begin();
+	std::list<int>::iterator right = sortedList.end();
+
+	while (std::distance(left, right) > 0) 
 	{
-		if (*it > element)
+		std::list<int>::iterator mid = left;
+		std::advance(mid, std::distance(left, right) / 2);
+
+		if (*mid > element) 
 		{
-			sortedList.insert(it, element);
-			return;
+			right = mid;
+		} 
+		else 
+		{
+			left = std::next(mid);
 		}
 	}
+
+	sortedList.insert(left, element);
+
 }
 
 std::list<int>* PmergeMe::parseToList(char** sequence)
