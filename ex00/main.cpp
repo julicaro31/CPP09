@@ -3,7 +3,13 @@ int main(int ac, char* argv[])
 {
     if (ac < 2)
     {
-        std::cout << "Unable to read file" << std::endl;
+        std::cout << "Unable to read file." << std::endl;
+        return 1;
+    }
+
+    if (ac > 2)
+    {
+        std::cout << "Too many arguments." << std::endl;
         return 1;
     }
 

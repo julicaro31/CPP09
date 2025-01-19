@@ -17,7 +17,7 @@ BitcoinExchange::BitcoinExchange(const BitcoinExchange& bitcoinExchange): bitcoi
 
 BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& bitcoinExchange)
 {
-	std::cout << "BitcoinExchange copy assignment operator has been called." <<std::endl;
+	std::cout << "BitcoinExchange copy assignment operator has been called." << std::endl;
 	if (this != &bitcoinExchange)
 	{
 		this->bitcoinPrice = bitcoinExchange.bitcoinPrice;

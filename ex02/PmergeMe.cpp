@@ -44,46 +44,48 @@ void PmergeMe::sortVector(char **sequence)
 	delete vSequence;
 }
 
-void PmergeMe::fordJohnsonSort(std::vector<int>& vec) 
+void PmergeMe::fordJohnsonSort(std::vector<int>& vec)
 {
 	int n = vec.size();
 	if (n <= 1) return;
 
 	std::vector<std::pair<int, int>> pairs;
 
-	for (int i = 0; i < n - 1; i += 2) 
+	for (int i = 0; i < n - 1; i += 2)
 	{
-		if (vec[i] > vec[i + 1]) 
+		if (vec[i] > vec[i + 1])
 		{
 			pairs.push_back({vec[i + 1], vec[i]});
-		} 
+		}
 		else 
 		{
 			pairs.push_back({vec[i], vec[i + 1]});
 		}
 	}
 
-	int straggler = (n % 2 == 1) ? vec[n - 1] : -1;
-
-	std::sort(pairs.begin(), pairs.end(), [](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second;});
+	int unpaired = (n % 2 == 1) ? vec[n - 1] : -1;
 
 	std::vector<int> sortedVector;
-	for (std::pair<int,int>& p : pairs) 
+	for (std::vector<std::pair<int, int>>::iterator it = pairs.begin(); it != pairs.end(); it++)
 	{
-		sortedVector.push_back(p.second);
+		sortedVector.push_back((*it).second);
 	}
 
-	for (std::pair<int,int>& p : pairs) 
+	fordJohnsonSort(sortedVector);
+
+	sortedVector.insert(sortedVector.begin(), (*pairs.begin()).first);
+
+	for (std::vector<std::pair<int, int>>::iterator it = pairs.begin() + 1; it != pairs.end(); it++)
 	{
-		binaryInsertion(sortedVector, p.first);
+		binaryInsertion(sortedVector, (*it).first);
 	}
 
-	if (straggler != -1) 
+	if (unpaired != -1)
 	{
-		binaryInsertion(sortedVector, straggler);
+		binaryInsertion(sortedVector, unpaired);
 	}
 
-	for (int i = 0; i < n; i++) 
+	for (int i = 0; i < n; i++)
 	{
 		vec[i] = sortedVector[i];
 	}
@@ -95,11 +97,11 @@ void PmergeMe::binaryInsertion(std::vector<int>& sortedVector, int element)
 	while (left <= right) 
 	{
 		int mid = (left + right) / 2;
-		if (sortedVector[mid] > element) 
+		if (sortedVector[mid] > element)
 		{
 			right = mid - 1;
-		} 
-		else 
+		}
+		else
 		{
 			left = mid + 1;
 		}
@@ -179,7 +181,7 @@ void PmergeMe::fordJohnsonSort(std::list<int>& list)
 {
 	int n = list.size();
 	if (n <= 1) return;
-	int straggler = -1;
+	int unpaired = -1;
 
 	std::list<std::pair<int, int>> pairs;
 
@@ -201,26 +203,31 @@ void PmergeMe::fordJohnsonSort(std::list<int>& list)
 		}
 		else
 		{
-			straggler = first;
+			unpaired = first;
 		}
 	}
 
-	pairs.sort([](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second;});
-
 	std::list<int> sortedList;
-	for (std::pair<int,int>& p : pairs) 
+	for (std::list<std::pair<int,int>>::iterator it = pairs.begin(); it != pairs.end(); it++)
 	{
-		sortedList.push_back(p.second);
+		sortedList.push_back((*it).second);
 	}
 
-	for (std::pair<int,int>& p : pairs) 
+	fordJohnsonSort(sortedList);
+	
+	sortedList.insert(sortedList.begin(), (*pairs.begin()).first);
+	std::list<std::pair<int,int>>::iterator pairsIt = pairs.begin();
+	pairsIt++;
+
+	while (pairsIt != pairs.end())
 	{
-		binaryInsertion(sortedList, p.first);
+		binaryInsertion(sortedList, (*pairsIt).first);
+		pairsIt++;
 	}
 
-	if (straggler != -1) 
+	if (unpaired != -1)
 	{
-		binaryInsertion(sortedList, straggler);
+		binaryInsertion(sortedList, unpaired);
 	}
 
 	list = sortedList;
@@ -231,16 +238,16 @@ void PmergeMe::binaryInsertion(std::list<int>& sortedList, int element)
 	std::list<int>::iterator left = sortedList.begin();
 	std::list<int>::iterator right = sortedList.end();
 
-	while (std::distance(left, right) > 0) 
+	while (std::distance(left, right) > 0)
 	{
 		std::list<int>::iterator mid = left;
 		std::advance(mid, std::distance(left, right) / 2);
 
-		if (*mid > element) 
+		if (*mid > element)
 		{
 			right = mid;
-		} 
-		else 
+		}
+		else
 		{
 			left = std::next(mid);
 		}
